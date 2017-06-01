@@ -1,0 +1,41 @@
+#container {
+
+    border: 1px solid black;
+    width: 500px;
+    height: 468px;
+}
+
+.field {
+    width: 52px;
+    height: 52px;
+    border: 1px solid black;
+    display: inline-block;
+    font-size: 18;
+    text-align: center;
+}
+
+#line-vertical-1 {
+    position: absolute;
+    height: 465px;
+    border: 2px solid black;
+    left: 173px;
+}
+#line-vertical-2 {
+    position: absolute;
+    height: 465px;
+    border: 2px solid black;
+    left: 341px;
+}
+
+#line-horizontal-1 {
+    border: 2px solid black;
+    position: absolute;
+    width: 500px;
+    top: 162px;
+}
+#line-horizontal-2 {
+    border: 2px solid black;
+    position: absolute;
+    width: 500px;
+    top: 320px;
+}
