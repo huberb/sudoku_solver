@@ -123,11 +123,5 @@ $(document).ready(function() {
             if (!prepareFields(next))
                 return false;
         }
-        // sleep time expects milliseconds
-        function sleep (time) {
-          return new Promise((resolve) => setTimeout(resolve, time));
-        }
-
-        // Usage!
     }();
 })
