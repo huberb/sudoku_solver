@@ -22,8 +22,7 @@ $(document).ready(function() {
                 if (canWriteToField(i, currField)) {
                     console.log("writing to Field: " + currField.attr('id') + ", value: " + i);
                     currField.val(i);
-                    var next = nextField(currField);
-                    solve(next);
+                    solve(nextField(currField));
                 }
             }
             currField.val('');
@@ -114,13 +113,9 @@ $(document).ready(function() {
 
             if(field.val() !== '')
                 fieldInfo[id] = 'initial';
-            else
-                fieldInfo[id] = 'unused';
 
             var next = nextField(field);
-            if(!next)
-                return false;
-            if (!prepareFields(next))
+            if (!next || !prepareFields(next))
                 return false;
         }
     }();
