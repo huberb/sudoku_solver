@@ -18,7 +18,6 @@ $(document).ready(function() {
         function updateSudoku() {
             if(!animationQueue.length) {
                 clearInterval(interval);
-            }
             interval = setInterval(updateSudoku, 0);
             solve(fieldInfo[0][0], [0, 0]);
         }
