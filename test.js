@@ -5,7 +5,7 @@ var Test = function() {
         document.getElementById('field_06').value = 7;
         document.getElementById('field_08').value = 1;
 
-        document.getElementById('field_10').value = 6;
+        //document.getElementById('field_10').value = 6;
         document.getElementById('field_11').value = 8;
         document.getElementById('field_14').value = 7;
         document.getElementById('field_17').value = 9;

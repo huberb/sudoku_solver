@@ -1,91 +1,115 @@
 $(document).ready(function() {
     var sudoku = function() {
-
-        var fieldInfo = {};
-        var test = new Test();
         
+        var fieldInfo = [];
+        var interval;
+        var test = new Test();
+
         test.fillSudoku();
-        prepareFields($('#field_00'));
         $('#solve-button').click(init);
 
         function init() {
-            solve($('#field_00'));
+            readInput();
+            animationQueue = [];
+            solve(fieldInfo[0][0], [0, 0]);
+            interval = setInterval(updateSudoku, 0);
         }
 
-        function solve(currField) {
-            var currID = currField.attr('id').slice(-2);
-            if(fieldInfo[currID] === 'initial') {
-                solve(nextField(currField));
+        function updateSudoku() {
+            if(!animationQueue.length) {
+                clearInterval(interval);
                 return;
             }
-            for(var i = 1; i < 10; i++) {
-                if (canWriteToField(i, currField)) {
-                    console.log("writing to Field: " + currField.attr('id') + ", value: " + i);
-                    currField.val(i);
-                    solve(nextField(currField));
-                }
-            }
-            currField.val('');
+            var next = animationQueue.shift();
+            $('#field_' + next.index[0] + next.index[1]).val(next.value)
         }
 
-        function nextField(currField) {
-            var currID = currField.attr('id').slice(-2);
+        function solve(field, index) {
             var next;
-            if(currID[1] < 8) {
-                next = $('#field_' + currID[0] + (parseInt(currID[1]) + 1).toString());
+
+            if(field.initial) {
+                next = nextFieldInfo(field, index);
+                if(!next) return false;
+                if(!solve(next[0], next[1])) return false;
+                return true;
+            }
+            
+            for(var i = 0; i < 10; i++) {
+                if(canWriteToField(i, index)) {
+                    fieldInfo[index[0]][index[1]].value = i;
+
+                    animationQueue.push({
+                        index: index,
+                        value: i
+                    });
+
+                    next = nextFieldInfo(field, index);
+                    if(!next) return false;
+                    if(!solve(next[0], next[1])) return false;
+                }
+            }
+            fieldInfo[index[0]][index[1]].value = '';
+
+            /*
+            animationQueue.push({
+                index: index,
+                value: ''
+            });
+            */
+                    
+            return true;
+        }
+
+        function nextFieldInfo(field, index) {
+            var newIndex = [  ];
+
+            if (index[1] === 8) {
+                newIndex = [index[0] + 1, 0];
             } else {
-                next = $('#field_' + (parseInt(currID[0]) + 1).toString() + '0');
+                newIndex = [index[0], index[1] + 1];
             }
-            if(!next.length) return false;
-            else return next;
+
+            if(newIndex[0] === 9)
+                return null;
+
+            var newField = fieldInfo[newIndex[0]][newIndex[1]];
+
+            return [newField, newIndex]
         }
 
-        function canWriteToField(value, field) {
-            return !verticalCollision(value, field) &&
-                   !horizontalCollision(value, field) &&
-                   !squareCollision(value, field);
+        function canWriteToField(value, index) {
+            return !verticalCollision(value, index) &&
+                   !horizontalCollision(value, index) &&
+                   !squareCollision(value, index);
         }
 
-        function verticalCollision(value, field) {
-            var id = field.attr('id').slice(-2);
-            for(var i = 1; i < 10; i++) {
-                var currField = $('#field_' + i + id[1]);
-                if(currField.val() == value) {
-                    console.log("collision with number: " + value + " at " + currField.attr('id'));
+        function horizontalCollision(value, index) {
+            index = index[0];
+            for(var i = 0; i < 9; i++) {
+                if (value == fieldInfo[index][i].value)
                     return true;
-                }
             }
             return false;
         }
 
-        function horizontalCollision(value, field) {
-            var id = field.attr('id').slice(-2);
-            for(var i = 1; i < 10; i++) {
-                var currField = $('#field_' + id[0] + i);
-                if(currField.val() == value) {
-                    console.log("collision with number: " + value + " at " + currField.attr('id'));
+        function verticalCollision(value, index) {
+            index = index[1];
+            for(var i = 0; i < 9; i++) {
+                if (value == fieldInfo[i][index].value)
                     return true;
-                }
             }
             return false;
         }
 
-        function squareCollision(value, field) {
-            var id = field.attr('id').slice(-2);
-            var idRangeX = getIdRange(id[0]);
-            var idRangeY = getIdRange(id[1]);
+        function squareCollision(value, index) {
+            var idRangeX = getIdRange(index[0]);
+            var idRangeY = getIdRange(index[1]);
 
             for(var x of idRangeX)
-                for(var y of idRangeY) {
-                    currID = x.toString() + y.toString();
-                    if(currID === id)
-                        continue;
-                    var currField = $('#field_' + currID);
-                    if(currField.val() == value) {
-                        console.log("collision with number: " + value + " at " + currID)
+                for(var y of idRangeY)
+                    if(fieldInfo[x][y][0] == value)
                         return true;
-                    }
-                }
+
             return false;
         }
 
@@ -107,16 +131,40 @@ $(document).ready(function() {
             }
         }
 
-        function prepareFields(field) {
-            console.log(field.attr('id'));
-            var id = field.attr('id').slice(-2);
+        function nextField(currField) {
+            var currID = currField.attr('id').slice(-2);
+            var next;
+            if(currID[1] < 8) {
+                next = $('#field_' + currID[0] + (parseInt(currID[1]) + 1).toString());
+            } else {
+                next = $('#field_' + (parseInt(currID[0]) + 1).toString() + '0');
+            }
+            if(!next.length) return false;
+            else return next;
+        }
 
-            if(field.val() !== '')
-                fieldInfo[id] = 'initial';
+        function readInput() {
+            var next = $('#field_00');
 
-            var next = nextField(field);
-            if (!next || !prepareFields(next))
-                return false;
+            var index = -1;
+            var initial;
+
+            do {
+                var initial = false
+
+                if(next.attr('id').slice(-1) === '0') {
+                    index += 1;
+                    fieldInfo[index] = [];
+                }
+                
+                if(next.val() !== '') {
+                    initial = true
+                    next.css('background-color', 'grey');
+                }
+
+                fieldInfo[index].push({ value: next.val(), initial: initial });
+
+            } while(next = nextField(next))
         }
     }();
 })
