@@ -33,19 +33,6 @@ $(document).ready(function() {
                 if(!solve(next[0], next[1])) return false;
                 return true;
             }
-            var next = animationQueue.shift();
-            $('#field_' + next.index[0] + next.index[1]).val(next.value)
-        }
-
-        function solve(field, index) {
-            var next;
-
-            if(field.initial) {
-                next = nextFieldInfo(field, index);
-                if(!next) return false;
-                if(!solve(next[0], next[1])) return false;
-                return true;
-            }
             
             for(var i = 0; i < 10; i++) {
                 if(canWriteToField(i, index)) {
