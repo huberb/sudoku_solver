@@ -18,14 +18,8 @@ $(document).ready(function() {
         function updateSudoku() {
             if(!animationQueue.length) {
                 clearInterval(interval);
-            }
-            interval = setInterval(updateSudoku, 0);
-            solve(fieldInfo[0][0], [0, 0]);
-        }
-
-        function updateSudoku() {
-            if(!animationQueue.length)
                 return;
+            }
             var next = animationQueue.shift();
             $('#field_' + next.index[0] + next.index[1]).val(next.value)
         }
